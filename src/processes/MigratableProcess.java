@@ -1,4 +1,4 @@
 package processes;
-public class MigratableProcess implements Runnable {
+public class MigratableProcess {
 
 }

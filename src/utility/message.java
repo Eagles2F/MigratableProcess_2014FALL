@@ -5,8 +5,13 @@ import processes.MigratableProcess;
 * command class used to send between manager and worker
 */
 public class message implements Serializable {
-    private int messageType;
-    private int messageId;
+    public enum msgType {
+        COMMAND,
+        RESPONSE
+    }
+    private msgType messageType;
+    private commandType cmdId;
+    private responseType resId;
     private int processId;
     private String processName;
     private String[] args;
@@ -16,20 +21,25 @@ public class message implements Serializable {
     private int result;
     private String cause;
     
-    public message (int type,int id){
+    
+    public message (msgType type){
         messageType = type;
-        messageId = id;
+        
     }
     
     
     
     /*get methods*/
-    public int getMessageType(){
+    public msgType getMessageType(){
         return messageType;
     }
     
-    public int getMessageId(){
-        return messageId;
+    public commandType getCommandId(){
+        return cmdId;
+    }
+    
+    public responseType getResponseId(){
+        return resId;
     }
     
     public int getProcessId(){
@@ -66,12 +76,16 @@ public class message implements Serializable {
     
     /*set method*/
     
-    public void setMessageType(int type){
+    public void setMessageType(msgType type){
         messageType = type ;
     }
     
-    public void setMessageId(int msgId){
-        messageId = msgId;
+    public void setCommandId(commandType msgId){
+        cmdId = msgId;
+    }
+    
+    public void setResponseId(responseType msgId){
+        resId = msgId;
     }
     
     public void setProcessId(int procId){
