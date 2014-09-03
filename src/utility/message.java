@@ -119,4 +119,11 @@ public class message implements Serializable {
     public void setCause(String c){
         cause = c;
     }
+
+
+
+	public void setCommandId(responseType startres) {
+		// TODO Auto-generated method stub
+		
+	}
 }
