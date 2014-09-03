@@ -5,11 +5,12 @@ package utility;
 * the response type used to send from worker to manager
 */
 
-public enum commandType {
+public enum CommandType {
     PULLINFO,
     START,
     MIGARATESOURCE,/*manager to source worker*/
     MIGRATETARGET, /*manager to target worker*/
-    KILL
+    KILL,
+    SHUTDOWN
 }
 

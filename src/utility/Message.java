@@ -4,14 +4,14 @@ import processes.MigratableProcess;
 /**
 * command class used to send between manager and worker
 */
-public class message implements Serializable {
+public class Message implements Serializable {
     public enum msgType {
         COMMAND,
         RESPONSE
     }
     private msgType messageType;
-    private commandType cmdId;
-    private responseType resId;
+    private CommandType cmdId;
+    private ResponseType resId;
     private int processId;
     private String processName;
     private String[] args;
@@ -20,9 +20,10 @@ public class message implements Serializable {
     private int targetNode;
     private int result;
     private String cause;
+    private ProcessInfo.Status procStatus;
     
     
-    public message (msgType type){
+    public Message (msgType type){
         messageType = type;
         
     }
@@ -34,11 +35,11 @@ public class message implements Serializable {
         return messageType;
     }
     
-    public commandType getCommandId(){
+    public CommandType getCommandId(){
         return cmdId;
     }
     
-    public responseType getResponseId(){
+    public ResponseType getResponseId(){
         return resId;
     }
     
@@ -74,17 +75,20 @@ public class message implements Serializable {
         return cause;
     }
     
+    public ProcessInfo.Status getStatus(){
+        return procStatus;
+    }
     /*set method*/
     
     public void setMessageType(msgType type){
         messageType = type ;
     }
     
-    public void setCommandId(commandType msgId){
+    public void setCommandId(CommandType msgId){
         cmdId = msgId;
     }
     
-    public void setResponseId(responseType msgId){
+    public void setResponseId(ResponseType msgId){
         resId = msgId;
     }
     
@@ -119,4 +123,9 @@ public class message implements Serializable {
     public void setCause(String c){
         cause = c;
     }
+    
+    public void setStatus(ProcessInfo.Status pStatus){
+        procStatus = pStatus;
+    }
+    
 }

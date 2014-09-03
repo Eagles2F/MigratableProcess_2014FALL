@@ -5,7 +5,7 @@ package utility;
 * the response type used to send from worker to manager
 */
 
-public enum responseType {
+public enum ResponseType {
     PULLINFORES,
     STARTRES,
     MIGARATESOURCERES,/*manager to source worker*/
