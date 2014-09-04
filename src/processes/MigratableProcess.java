@@ -22,4 +22,9 @@ public class MigratableProcess implements Runnable {
 		
 	}
 
+	public void suspend() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

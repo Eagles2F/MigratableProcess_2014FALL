@@ -62,29 +62,51 @@ public class WorkerNode {
 		//response message prepared!
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.KILLRES);
-		System.out.println(msg.getProcessId());
 		MigratableProcess mp = currentMap.remove(msg.getProcessId());
 		mp.exit();
-		System.out.println("Successfully kill the process");
 		response.setProcessId(mp.getProcessID());
 		response.setResult(Message.msgResult.SUCCESS);
+		sendToManager(response);		
+	}
+	
+	// receive the process from the process manager
+	private void handle_migratetarget(Message msg) {
+		//response prepared
+		Message response = new Message(msgType.RESPONSE);
+		response.setResponseId(ResponseType.MIGRATETARGETRES);
+		response.setProcessId(msg.getProcessId());;
+		
+		//continue the process here£¡
+		MigratableProcess mp = msg.getProcessObject();
+		System.out.println("object received, ready to go!");
+		runProcess(mp);
 		
 		
 	}
-	private void handle_migratetarget() {
+	
+	// handle the migrate from command. The worker received should package the process and diliver it to the master
+	private void handle_migratesource(Message msg) {
+		// response prepared!
+		Message response = new Message(msgType.RESPONSE);
+		response.setResponseId(ResponseType.MIGARATESOURCERES);
+		// package the process to be transfered!
+		MigratableProcess mp = currentMap.get(msg.getProcessId());
+		mp.suspend();
+		currentMap.remove(mp.getProcessID());
+		response.setTargetId(msg.getTargetId());
+		response.setProcessObject(mp);
+		response.setResult(Message.msgResult.SUCCESS);
 		
-		
-	}
-	private void handle_migratesource() {
-		
-		
+		// send the response
+		sendToManager(response);
 	}
 	// using reflection to construct the process and find the class by the name of it
 	private void handle_start(Message msg) {
 		// response message prepared!
 		Message response=new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.STARTRES);
-		
+		response.setProcessId(msg.getProcessId());
+		response.setProcessName(msg.getProcessName());
 		//start the process
 		Class processClass;
 		try {
@@ -182,10 +204,10 @@ public class WorkerNode {
 							worker.handle_start(master_cmd);
 							break;
 						case MIGARATESOURCE: // this command tries to migrate a process from this worker
-							worker.handle_migratesource();
+							worker.handle_migratesource(master_cmd);
 							break;
 						case MIGRATETARGET: // this command tries to migrate a process to this worker
-							worker.handle_migratetarget();
+							worker.handle_migratetarget(master_cmd);
 							break;
 						case KILL:	// this command tries to kill a process on this worker
 							worker.handle_kill(master_cmd);

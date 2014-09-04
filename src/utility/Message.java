@@ -29,6 +29,7 @@ public class Message implements Serializable {
     private String cause;
     private ProcessInfo.Status procStatus;
     private HashMap<Integer,ProcessInfo.Status> workerInfo;
+    private int workerID;
     
     
     public Message (msgType type){
@@ -135,5 +136,17 @@ public class Message implements Serializable {
     public void setStatus(ProcessInfo.Status pStatus){
         procStatus = pStatus;
     }
+
+
+
+	public int getWorkerID() {
+		return workerID;
+	}
+
+
+
+	public void setWorkerID(int workerID) {
+		this.workerID = workerID;
+	}
     
 }
