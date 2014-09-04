@@ -12,6 +12,10 @@ public class Message implements Serializable {
         RESPONSE,
         INDICATION
     }
+    public enum msgResult{
+        SUCCESS,
+        FAILURE
+    }
     private msgType messageType;
     private CommandType cmdId;
     private ResponseType resId;
