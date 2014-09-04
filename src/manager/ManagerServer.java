@@ -65,7 +65,7 @@ public class ManagerServer implements Runnable{
     }
     
     private void handleStartRes(Message workerMsg){
-        if(workerMsg.getResult() == -1){
+        if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessName()+"failed to start: "+workerMsg.getCause());
         }
         else{
@@ -78,7 +78,7 @@ public class ManagerServer implements Runnable{
     }
     
     private void handleKillRes(Message workerMsg){
-        if(workerMsg.getResult() == -1){
+        if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to kill: "+workerMsg.getCause());
         }
         else{
@@ -88,7 +88,7 @@ public class ManagerServer implements Runnable{
     }
     
     private void handleMigrateSourceRes(Message workerMsg){
-        if(workerMsg.getResult() == -1){
+        if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate from: "+workerMsg.getProcessId());
         }
         else{
@@ -107,7 +107,7 @@ public class ManagerServer implements Runnable{
     }
     
     private void hanleMigrateTargetRes(Message workerMsg){
-        if(workerMsg.getResult() == -1){
+        if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate to : "+workerMsg.getProcessId());
         }
         else{
