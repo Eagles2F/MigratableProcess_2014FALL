@@ -39,7 +39,7 @@ public class WorkerNode {
 	private ObjectOutputStream obos;
 
 	private boolean failure = false; // failure == ture means the process died!
-
+	private int workerID;
 	// process related properties
 	private Thread t;
 	private HashMap<Integer, MigratableProcess> currentMap;
@@ -49,11 +49,13 @@ public class WorkerNode {
 	public WorkerNode(){
 		this.host = null;
 		this.port = 0;
+		this.workerID = 0;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
 	}
 	public WorkerNode(String host, int port){
 		this.host=host;
 		this.port = port;
+		this.workerID = 0;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
 	}
 	
@@ -66,6 +68,8 @@ public class WorkerNode {
 		mp.exit();
 		response.setProcessId(mp.getProcessID());
 		response.setResult(Message.msgResult.SUCCESS);
+		
+		//send the response back
 		sendToManager(response);		
 	}
 	
@@ -75,13 +79,16 @@ public class WorkerNode {
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.MIGRATETARGETRES);
 		response.setProcessId(msg.getProcessId());;
-		
+		response.setWorkerID(workerID);
 		//continue the process here£¡
 		MigratableProcess mp = msg.getProcessObject();
 		System.out.println("object received, ready to go!");
 		runProcess(mp);
 		
+		response.setResult(Message.msgResult.SUCCESS);
 		
+		//send the response back
+		sendToManager(response);
 	}
 	
 	// handle the migrate from command. The worker received should package the process and diliver it to the master
@@ -145,6 +152,17 @@ public class WorkerNode {
 		sendToManager(response);
 	}
 	
+	 // handle the command assign id 
+	private void handle_assignID(Message msg){
+		this.workerID =msg.getWorkerID(); 
+	}
+	
+	// hanld the command exit
+	
+	private void handle_exit(Message msg){
+		System.exit(0);
+	}
+	
 	// some auxiliary methods
 	
 		// create a thread to run the process
@@ -200,6 +218,9 @@ public class WorkerNode {
 				try {
 					Message master_cmd = (Message) worker.obis.readObject();
 					switch(master_cmd.getCommandId()){
+						case ASSIGNID:// this command assignes the id to the process
+							worker.handle_assignID(master_cmd);
+							break;
 						case START:// this command tries to start a process on this worker
 							worker.handle_start(master_cmd);
 							break;
@@ -211,6 +232,9 @@ public class WorkerNode {
 							break;
 						case KILL:	// this command tries to kill a process on this worker
 							worker.handle_kill(master_cmd);
+							break;
+						case SHUTDOWN:// this command shutdown this worker
+							worker.handle_exit(master_cmd);
 							break;
 						default:
 							System.out.println("Wrong cmd:"+master_cmd.getCommandId());
