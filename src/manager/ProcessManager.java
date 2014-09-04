@@ -246,7 +246,7 @@ public class ProcessManager {
         System.out.println("migrate <process id> <source id> <target id> : migrate process from source to target worker");
         System.out.println("kill <process id> : kill the process");
     }
-    private void removeNode(int id){
+    public void removeNode(int id){
         processServerMap.get(id).stop();
         processServerMap.remove(id);
         workersMap.remove(id);
