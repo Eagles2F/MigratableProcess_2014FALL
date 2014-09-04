@@ -56,11 +56,16 @@ public class WorkerNode {
 		this.port = port;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
 	}
+	
 	//command handling methods
 	private void handle_kill(Message msg) {
 		//response message prepared!
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.KILLRES);
+		System.out.println(msg.getProcessId());
+		MigratableProcess mp = currentMap.remove(msg.getProcessId());
+		mp.exit();
+		System.out.println("Successfully kill the process");
 		
 	}
 	private void handle_migratetarget() {

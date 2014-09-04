@@ -17,4 +17,9 @@ public class MigratableProcess implements Runnable {
 		
 	}
 
+	public void exit() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
