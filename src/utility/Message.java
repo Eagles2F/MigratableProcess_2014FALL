@@ -1,5 +1,7 @@
 package utility;
 import java.io.Serializable;
+import java.util.HashMap;
+
 import processes.MigratableProcess;
 /**
 * command class used to send between manager and worker
@@ -7,7 +9,8 @@ import processes.MigratableProcess;
 public class Message implements Serializable {
     public enum msgType {
         COMMAND,
-        RESPONSE
+        RESPONSE,
+        INDICATION
     }
     private msgType messageType;
     private CommandType cmdId;
@@ -21,6 +24,7 @@ public class Message implements Serializable {
     private int result;
     private String cause;
     private ProcessInfo.Status procStatus;
+    private HashMap<Integer,ProcessInfo.Status> workerInfo;
     
     
     public Message (msgType type){
