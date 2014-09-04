@@ -1,30 +1,42 @@
 package processes;
-public class MigratableProcess implements Runnable {
 
-	public void setProcessID(int processId) {
-		// TODO Auto-generated method stub
-		
+import java.io.Serializable;
+
+import utility.ProcessInfo;
+
+public abstract class MigratableProcess implements Runnable,Serializable {
+    
+   int processId;
+   ProcessInfo.Status status;
+   boolean complete;
+
+	public void setProcessID(int processId){
+	    
 	}
 
-	public Integer getProcessID() {
-		// TODO Auto-generated method stub
-		return null;
+	public Integer getProcessID(){
+	    return processId;
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
+	public void suspend(){
+	    
 	}
 
-	public void exit() {
-		// TODO Auto-generated method stub
-		
+	public void exit(){
+	    
 	}
-
-	public void suspend() {
-		// TODO Auto-generated method stub
-		
+	
+	public void setStatus(ProcessInfo.Status status){
+	    
 	}
-
+	public ProcessInfo.Status getStatus(){
+	    return status;
+	}
+	
+	public void setComplete(){
+	    
+	}
+	public Boolean isComplete(){
+	    return complete;
+	}
 }
