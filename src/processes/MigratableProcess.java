@@ -7,7 +7,7 @@ import utility.ProcessInfo;
 public abstract class MigratableProcess implements Runnable,Serializable {
     
    int processId;
-   ProcessInfo.Status status;
+   ProcessInfo.Status procStatus;
    boolean complete;
 
 	public void setProcessID(int processId){
@@ -30,11 +30,11 @@ public abstract class MigratableProcess implements Runnable,Serializable {
 	    
 	}
 	public ProcessInfo.Status getStatus(){
-	    return status;
+	    return procStatus;
 	}
 	
-	public void setComplete(){
-	    
+	public void setComplete(boolean flag){
+	    complete = flag;
 	}
 	public Boolean isComplete(){
 	    return complete;

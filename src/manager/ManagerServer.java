@@ -3,8 +3,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import utility.*;
 
+import utility.*;
+import utility.Message.msgType;
 import manager.ProcessManager;
 import utility.*;
 public class ManagerServer implements Runnable{
@@ -31,7 +32,13 @@ public class ManagerServer implements Runnable{
     
     public void run(){
         try{
+            Message assignCmd = new Message(msgType.COMMAND);
+            assignCmd.setCommandId(CommandType.ASSIGNID);
+            assignCmd.setWorkerID(workerId);
+            sendToWorker(assignCmd);
+            
             Message workerMessage;
+            
             while(running){
                 System.out.println("managerServer for worker "+workerId+"running");
                 try{

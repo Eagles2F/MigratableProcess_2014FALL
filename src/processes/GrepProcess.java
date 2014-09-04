@@ -11,7 +11,7 @@ import java.lang.InterruptedException;
 import utility.*;
 import utility.ProcessInfo.Status;
 
-public class GrepProcess implements MigratableProcess
+public class GrepProcess extends MigratableProcess
 {
 	private TransactionalFileInputStream  inFile;
 	private TransactionalFileOutputStream outFile;
@@ -69,46 +69,6 @@ public class GrepProcess implements MigratableProcess
 		while (suspending);
 	}
 
-    @Override
-    public void setProcessID(int processId) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public Integer getProcessID() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void exit() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void setStatus(Status status) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public Status getStatus() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setComplete() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public Boolean isComplete() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    
 
 }
