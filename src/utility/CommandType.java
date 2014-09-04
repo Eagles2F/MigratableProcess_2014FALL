@@ -11,6 +11,7 @@ public enum CommandType {
     MIGARATESOURCE,/*manager to source worker*/
     MIGRATETARGET, /*manager to target worker*/
     KILL,
-    SHUTDOWN
+    SHUTDOWN, 
+    ASSIGNID
 }
 
