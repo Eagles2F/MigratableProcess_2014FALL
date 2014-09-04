@@ -33,12 +33,13 @@ public class ManagerServer implements Runnable{
         try{
             Message workerMessage;
             while(running){
+                System.out.println("managerServer for worker "+workerId+"running");
                 try{
                     workerMessage = (Message) objInput.readObject();
                 }catch(ClassNotFoundException e){
                     continue;
                 }
-                System.out.println("worker message received: id "+workerMessage.getCommandId());
+                System.out.println("worker message received: id "+workerMessage.getResponseId());
                 
                 switch(workerMessage.getResponseId()){
                     case STARTRES:
@@ -46,13 +47,13 @@ public class ManagerServer implements Runnable{
                     
                         break;
                     case MIGARATESOURCERES:
-                        //handleMigrateSourceRes(workerMessage);
+                        handleMigrateSourceRes(workerMessage);
                         break;
                     case MIGRATETARGETRES:
-                        //hanleMigrateTargetRes(workerMessage);
+                        hanleMigrateTargetRes(workerMessage);
                         break;
                     case KILLRES:
-                        //handleKillRes(workerMessage);
+                        handleKillRes(workerMessage);
                         break;
                     default:
                         System.out.println("unrecagnized message");
@@ -65,7 +66,7 @@ public class ManagerServer implements Runnable{
     
     private void handleStartRes(Message workerMsg){
         if(workerMsg.getResult() == -1){
-            System.out.println("process "+workerMsg.getProcessName()+"failed to start");
+            System.out.println("process "+workerMsg.getProcessName()+"failed to start: "+workerMsg.getCause());
         }
         else{
             ProcessInfo procInfo = new ProcessInfo();
@@ -75,17 +76,56 @@ public class ManagerServer implements Runnable{
             manager.processesMap.put(workerMsg.getProcessId(), procInfo);
         }
     }
-    public void sendToWorker(Message cmd){
-        try {
-            if (objOut == null) {
-                objOut = new ObjectOutputStream(socket.getOutputStream());
+    
+    private void handleKillRes(Message workerMsg){
+        if(workerMsg.getResult() == -1){
+            System.out.println("process "+workerMsg.getProcessId()+"failed to kill: "+workerMsg.getCause());
+        }
+        else{
+            
+            manager.processesMap.get(workerMsg.getProcessId()).setStatus(ProcessInfo.Status.FINISHED);
+        }
+    }
+    
+    private void handleMigrateSourceRes(Message workerMsg){
+        if(workerMsg.getResult() == -1){
+            System.out.println("process "+workerMsg.getProcessId()+"failed to migrate from: "+workerMsg.getProcessId());
+        }
+        else{
+            
+            workerMsg.setMessageType(Message.msgType.COMMAND);
+            workerMsg.setCommandId(CommandType.MIGRATETARGET);
+            
+            int result = manager.processServerMap.get(workerMsg.getTargetId()).sendToWorker(workerMsg);
+            if(result == -1)
+            {
+                System.out.println("failed to send message to target worker "+workerMsg.getTargetId()+"remove the worker");
+                manager.removeNode(workerMsg.getTargetId());
             }
+            
+        }
+    }
+    
+    private void hanleMigrateTargetRes(Message workerMsg){
+        if(workerMsg.getResult() == -1){
+            System.out.println("process "+workerMsg.getProcessId()+"failed to migrate to : "+workerMsg.getProcessId());
+        }
+        else{
+            
+            manager.processesMap.get(workerMsg.getProcessId()).setWorkerId(workerMsg.getTargetId());
+            
+        }
+    }
+    public int sendToWorker(Message cmd){
+        try {
             
             objOut.writeObject(cmd);
             objOut.flush();
+            return 0;
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Command sent failed");
+            return -1;
         }
     }
     public void stop(){

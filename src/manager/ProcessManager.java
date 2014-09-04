@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.net.Socket;
+
+
 
 
 
@@ -24,6 +28,8 @@ public class ProcessManager {
     public ConcurrentHashMap<Integer,ProcessInfo> processesMap;
     public ConcurrentHashMap<Integer,Socket> workersMap;/*worker node socket for every id*/
     public ConcurrentHashMap<Integer,ManagerServer> processServerMap;/*processServer for every worker node Id*/
+    public ConcurrentHashMap<Integer,Boolean> workerStatusMap;/*worker will report the status every 5 seconds, a timer task will
+                                                             check this*/
     private ConnectionServer connServer;
 
     private int port;
@@ -40,6 +46,7 @@ public class ProcessManager {
         processesMap = new ConcurrentHashMap<Integer,ProcessInfo>();
         workersMap = new ConcurrentHashMap<Integer,Socket>();
         processServerMap = new ConcurrentHashMap<Integer,ManagerServer>();
+        workerStatusMap = new ConcurrentHashMap<Integer,Boolean>();
         processId = 0;
         running = true;
         
@@ -246,7 +253,7 @@ public class ProcessManager {
         System.out.println("migrate <process id> <source id> <target id> : migrate process from source to target worker");
         System.out.println("kill <process id> : kill the process");
     }
-    private void removeNode(int id){
+    public void removeNode(int id){
         processServerMap.get(id).stop();
         processServerMap.remove(id);
         workersMap.remove(id);
@@ -275,6 +282,33 @@ public class ProcessManager {
         }
         
     }
+    
+    private void checkWorkerLiveness(){
+        System.out.println("monitor timer expire!");
+        
+        Set<Integer> workerIdSet = workerStatusMap.keySet();
+        Iterator<Integer> idIterator = workerIdSet.iterator();
+        while(idIterator.hasNext()){
+            int id = idIterator.next();
+            if(!workerStatusMap.get(id).booleanValue()){
+                System.out.println("worker "+id+" is not alive. remove it");
+                removeNode(id);
+            }
+                
+        }
+    }
+    
+    public void startMoniterTimer(){
+        Timer timer = new Timer(true);
+        TimerTask task = new TimerTask(){
+            public void run(){
+                checkWorkerLiveness();
+            }
+        };
+        timer.schedule(task, 0, 5*1000);
+        System.out.println("start the monitor timer");
+        
+    }
     public static void main(String[] args){
         if(args.length != 1){
             System.out.println("wrong arguments, usage: processManager <port number>");
@@ -289,7 +323,11 @@ public class ProcessManager {
         }
         ProcessManager manager = new ProcessManager(port);
         manager.startServer(port);
+        System.out.println("go to start timer");
+        manager.startMoniterTimer();
         manager.startConsole();
+        
+        
         
         
     }
