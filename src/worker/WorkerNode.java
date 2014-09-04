@@ -66,6 +66,9 @@ public class WorkerNode {
 		MigratableProcess mp = currentMap.remove(msg.getProcessId());
 		mp.exit();
 		System.out.println("Successfully kill the process");
+		response.setProcessId(mp.getProcessID());
+		response.setResult(0);
+		
 		
 	}
 	private void handle_migratetarget() {
