@@ -67,7 +67,7 @@ public class WorkerNode {
 		mp.exit();
 		System.out.println("Successfully kill the process");
 		response.setProcessId(mp.getProcessID());
-		response.setResult(0);
+		response.setResult(Message.msgResult.SUCCESS);
 		
 		
 	}
@@ -97,29 +97,29 @@ public class WorkerNode {
 			process.setProcessID(msg.getProcessId()); // method needed to be created in MigratableProcess
 			runProcess(process);
 		}catch (ClassNotFoundException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Class not Found!");
 		}catch (NoSuchMethodException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("No such method!");
 		} catch (SecurityException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Security Exception!");
 		} catch (InstantiationException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Instantiation Exception!");
 		} catch (IllegalAccessException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Illegal Access !");
 		} catch (IllegalArgumentException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Illegal Argument!");
 		} catch (InvocationTargetException e) {
-			response.setResult(0);
+			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Invocation Target Exception!");
 		}
 		// send the response back to the master
-		response.setResult(1);
+		response.setResult(Message.msgResult.SUCCESS);
 		sendToManager(response);
 	}
 	

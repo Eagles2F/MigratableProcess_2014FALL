@@ -25,7 +25,7 @@ public class Message implements Serializable {
     private MigratableProcess processObject;
     private int sourceNode;
     private int targetNode;
-    private int result;
+    private msgResult result;
     private String cause;
     private ProcessInfo.Status procStatus;
     private HashMap<Integer,ProcessInfo.Status> workerInfo;
@@ -75,7 +75,7 @@ public class Message implements Serializable {
         return targetNode;
     }
     
-    public int getResult(){
+    public msgResult getResult(){
         return result;
     }
     
@@ -124,8 +124,8 @@ public class Message implements Serializable {
         targetNode = targetId;
     }
     
-    public void setResult(int r){
-        result = r;
+    public void setResult(msgResult success){
+        result = success;
     }
     
     public void setCause(String c){
