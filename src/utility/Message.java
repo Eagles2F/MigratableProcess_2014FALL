@@ -148,5 +148,17 @@ public class Message implements Serializable {
 	public void setWorkerID(int workerID) {
 		this.workerID = workerID;
 	}
+
+
+
+	public HashMap<Integer,ProcessInfo.Status> getWorkerInfo() {
+		return workerInfo;
+	}
+
+
+
+	public void setWorkerInfo(HashMap<Integer,ProcessInfo.Status> workerInfo) {
+		this.workerInfo = workerInfo;
+	}
     
 }

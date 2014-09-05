@@ -12,7 +12,10 @@ import java.net.Socket;
 
 import java.util.HashMap;
 
+import javax.management.timer.Timer;
+
 import utility.Message;
+import utility.ProcessInfo;
 /*
  * The workerNode is the slave of the process manager. It is a seperate running machine which is connected 
  * to the process manager with socket. When it is started, the port and IP address of the processmanager
@@ -261,5 +264,40 @@ public class WorkerNode {
 			System.out.println("Please enter the host ip and port number");
 		}
 	}
+	
+	// poll info method 
+	public class Pollinfo implements Runnable{
 
+		@Override
+		public void run() {
+			// send the info about the current process running information every 5 seconds
+			while(!failure){
+				Message response=new Message(msgType.RESPONSE);
+				response.setResponseId(ResponseType.PULLINFORES);
+				
+				HashMap<Integer,ProcessInfo.Status> workerinfo = new HashMap<Integer, ProcessInfo.Status>();
+				
+				for(int i:currentMap.keySet()){
+					MigratableProcess mp = currentMap.get(i);
+					if(mp.isComplete()){
+						mp.setStatus(ProcessInfo.Status.FINISHED);
+					}
+					workerinfo.put(i, mp.getStatus());
+				}
+				response.setWorkerInfo(workerinfo);
+				
+				try {
+					Thread.sleep(5 * Timer.ONE_SECOND);
+				} catch (InterruptedException e) {
+					//System.out.println(e.toString());
+				}
+			}
+		}
+		
+	}
 }
+
+
+
+
+
