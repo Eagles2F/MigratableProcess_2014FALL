@@ -32,10 +32,10 @@ public class ManagerServer implements Runnable{
     
     public void run(){
         try{
-            Message assignCmd = new Message(msgType.COMMAND);
-            assignCmd.setCommandId(CommandType.ASSIGNID);
-            assignCmd.setWorkerID(workerId);
-            sendToWorker(assignCmd);
+            //Message assignCmd = new Message(msgType.COMMAND);
+            //assignCmd.setCommandId(CommandType.ASSIGNID);
+            //assignCmd.setWorkerID(workerId);
+            //sendToWorker(assignCmd);
             
             Message workerMessage;
             
