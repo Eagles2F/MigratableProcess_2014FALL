@@ -6,6 +6,7 @@ import java.net.Socket;
 
 import utility.*;
 import utility.Message.msgType;
+import utility.ProcessInfo.Status;
 import manager.ProcessManager;
 import utility.*;
 public class ManagerServer implements Runnable{
@@ -15,7 +16,7 @@ public class ManagerServer implements Runnable{
     private boolean running;
 
     private ObjectInputStream objInput;
-    private ObjectOutputStream objOut;
+    private ObjectOutputStream objOutput;
 
     public ManagerServer(ProcessManager procManager, int id, Socket s) throws IOException {
 
@@ -25,17 +26,18 @@ public class ManagerServer implements Runnable{
 
         System.out.println("adding a new process server for worker "+id);
         socket = manager.workersMap.get(id);
+        manager.workerStatusMap.put(id,0);
         objInput = new ObjectInputStream(socket.getInputStream());
-        objOut = new ObjectOutputStream(socket.getOutputStream());
+        objOutput = new ObjectOutputStream(socket.getOutputStream());
        
     }
     
     public void run(){
         try{
-            //Message assignCmd = new Message(msgType.COMMAND);
-            //assignCmd.setCommandId(CommandType.ASSIGNID);
-            //assignCmd.setWorkerID(workerId);
-            //sendToWorker(assignCmd);
+            Message assignCmd = new Message(msgType.COMMAND);
+            assignCmd.setCommandId(CommandType.ASSIGNID);
+            assignCmd.setWorkerID(workerId);
+            sendToWorker(assignCmd);
             
             Message workerMessage;
             
@@ -66,6 +68,8 @@ public class ManagerServer implements Runnable{
                         System.out.println("unrecagnized message");
                 }
             }
+            objInput.close();
+            objOutput.close();
         }catch(IOException e){
             
         }
@@ -76,11 +80,7 @@ public class ManagerServer implements Runnable{
             System.out.println("process "+workerMsg.getProcessName()+"failed to start: "+workerMsg.getCause());
         }
         else{
-            ProcessInfo procInfo = new ProcessInfo();
-            procInfo.setId(workerMsg.getProcessId());
-            procInfo.setName(workerMsg.getProcessName());
-            procInfo.setStatus(workerMsg.getStatus());
-            manager.processesMap.put(workerMsg.getProcessId(), procInfo);
+            manager.processesMap.get(workerMsg.getProcessId()).setStatus(Status.RUNNING);
         }
     }
     
@@ -102,10 +102,10 @@ public class ManagerServer implements Runnable{
             
             workerMsg.setMessageType(Message.msgType.COMMAND);
             workerMsg.setCommandId(CommandType.MIGRATETARGET);
+            try{
+                manager.processServerMap.get(workerMsg.getTargetId()).sendToWorker(workerMsg);
+            }catch(IOException e){
             
-            int result = manager.processServerMap.get(workerMsg.getTargetId()).sendToWorker(workerMsg);
-            if(result == -1)
-            {
                 System.out.println("failed to send message to target worker "+workerMsg.getTargetId()+"remove the worker");
                 manager.removeNode(workerMsg.getTargetId());
             }
@@ -123,18 +123,15 @@ public class ManagerServer implements Runnable{
             
         }
     }
-    public int sendToWorker(Message cmd){
-        try {
+    public int sendToWorker(Message cmd) throws IOException{
+        
             
-            objOut.writeObject(cmd);
-            objOut.flush();
+            objOutput.writeObject(cmd);
+            objOutput.flush();
             return 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Command sent failed");
-            return -1;
-        }
+         
     }
+    
     public void stop(){
         running = false;
     }

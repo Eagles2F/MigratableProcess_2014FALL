@@ -16,7 +16,12 @@ import java.net.Socket;
 
 
 
+
+
+import java.net.SocketException;
+
 import utility.*;
+import utility.ProcessInfo.Status;
 
 /**
 * ProcessManager serve as the master of this whole system. It will open a command
@@ -28,7 +33,7 @@ public class ProcessManager {
     public ConcurrentHashMap<Integer,ProcessInfo> processesMap;
     public ConcurrentHashMap<Integer,Socket> workersMap;/*worker node socket for every id*/
     public ConcurrentHashMap<Integer,ManagerServer> processServerMap;/*processServer for every worker node Id*/
-    public ConcurrentHashMap<Integer,Boolean> workerStatusMap;/*worker will report the status every 5 seconds, a timer task will
+    public ConcurrentHashMap<Integer,Integer> workerStatusMap;/*worker will report the status every 5 seconds, a timer task will
                                                              check this*/
     private ConnectionServer connServer;
 
@@ -46,7 +51,7 @@ public class ProcessManager {
         processesMap = new ConcurrentHashMap<Integer,ProcessInfo>();
         workersMap = new ConcurrentHashMap<Integer,Socket>();
         processServerMap = new ConcurrentHashMap<Integer,ManagerServer>();
-        workerStatusMap = new ConcurrentHashMap<Integer,Boolean>();
+        workerStatusMap = new ConcurrentHashMap<Integer,Integer>();
         processId = 0;
         running = true;
         
@@ -124,7 +129,7 @@ public class ProcessManager {
         }
         int workerId;
         try{
-            workerId = Integer.getInteger(cmdLine[1]);
+            workerId = Integer.valueOf(cmdLine[1]);
             
         }catch(Exception e){
             System.out.println("the worker id is not a number");
@@ -143,7 +148,7 @@ public class ProcessManager {
         try{
             Class process = ProcessManager.class.getClassLoader().loadClass(cmdLine[2]);
         }catch(ClassNotFoundException e){
-            System.out.println("no such process class");
+            System.out.println("no such process class "+cmdLine[2]);
             return;
         }
         
@@ -153,7 +158,24 @@ public class ProcessManager {
         cmdMessage.setArgs(args);
         cmdMessage.setProcessName(cmdLine[2]);
         cmdMessage.setProcessId(processId);
-        processServerMap.get(workerId).sendToWorker(cmdMessage);
+        if(processServerMap.containsKey(workerId)){
+            try{
+                processServerMap.get(workerId).sendToWorker(cmdMessage);
+                ProcessInfo procInfo = new ProcessInfo();
+                procInfo.setId(processId);
+                procInfo.setName(cmdLine[2]);
+                procInfo.setWorkerId(workerId);
+                procInfo.setStatus(Status.STARTING);
+                processesMap.put(processId, procInfo);
+            }catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("start Command sent failed, remove worker "+workerId);
+                removeNode(workerId);
+            }
+        }
+        else{
+            System.out.println("there is no server for workerId "+workerId);
+        }
             
     }
     
@@ -180,8 +202,14 @@ public class ProcessManager {
                 killCommand.setCommandId(CommandType.KILL);
                 killCommand.setProcessId(procId);
                 int workerId = procInfo.getWorkerId();
-                
-                processServerMap.get(workerId).sendToWorker(killCommand);
+                try{
+                    processServerMap.get(workerId).sendToWorker(killCommand);
+                    processesMap.get(procId).setStatus(Status.TERMINATING);
+                }catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("Kill Command sent failed, remove worker "+workerId);
+                    removeNode(workerId);
+                }
                 
                 
                 /*update the process status when receive the reply from worker*/
@@ -237,8 +265,14 @@ public class ProcessManager {
         migrateCommand.setSourceId(sourceId);
         migrateCommand.setTargetId(targetId);
         
-        
-        processServerMap.get(sourceId).sendToWorker(migrateCommand);
+        try{
+            processServerMap.get(sourceId).sendToWorker(migrateCommand);
+            processesMap.get(procId).setStatus(Status.TRASFERING);
+        }catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Migrate Command sent failed, remove worker "+sourceId);
+            removeNode(sourceId);
+        }
         
 
 
@@ -257,6 +291,7 @@ public class ProcessManager {
         processServerMap.get(id).stop();
         processServerMap.remove(id);
         workersMap.remove(id);
+        workerStatusMap.remove(id);
     }
     
     private void startServer(int port){
@@ -266,33 +301,48 @@ public class ProcessManager {
     }
     
     private void terminate(){
+        int workerId;
         Message tmntCommand = new Message(Message.msgType.COMMAND);
         tmntCommand.setCommandId(CommandType.SHUTDOWN);
         Set<Integer> workerIdSet = processServerMap.keySet();
         Iterator<Integer> workerIterator= workerIdSet.iterator();
+        /*shut down the worker node*/
         while(workerIterator.hasNext()){
-            processServerMap.get(workerIterator.next()).sendToWorker(tmntCommand);
-            processServerMap.get(workerIterator.next()).stop();
+            workerId = workerIterator.next();
+            try{
+                processServerMap.get(workerId).sendToWorker(tmntCommand);
+                processServerMap.get(workerId).stop();
+            }catch (IOException e) {
+                processServerMap.get(workerId).stop();
+                e.printStackTrace();
+                System.out.println("shutdown Command sent failed, remove worker "+workerId);
+                removeNode(workerId);
+            }
+            
         }
-        
+        /*shut down the console and connection server*/
         try{
             console.close();
         }catch(IOException e){
             
         }
+        connServer.stop();
         
     }
     
     private void checkWorkerLiveness(){
-        System.out.println("monitor timer expire!");
+        //System.out.println("monitor timer expire!");
         
         Set<Integer> workerIdSet = workerStatusMap.keySet();
         Iterator<Integer> idIterator = workerIdSet.iterator();
         while(idIterator.hasNext()){
             int id = idIterator.next();
-            if(!workerStatusMap.get(id).booleanValue()){
+            if(workerStatusMap.get(id).intValue() > 1){
                 System.out.println("worker "+id+" is not alive. remove it");
                 removeNode(id);
+            }
+            else{
+                workerStatusMap.put(id, workerStatusMap.get(id).intValue()+1);
             }
                 
         }
@@ -324,7 +374,7 @@ public class ProcessManager {
         ProcessManager manager = new ProcessManager(port);
         manager.startServer(port);
         System.out.println("go to start timer");
-        manager.startMoniterTimer();
+        //manager.startMoniterTimer();
         manager.startConsole();
         
         

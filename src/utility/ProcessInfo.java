@@ -5,8 +5,12 @@ public class ProcessInfo{
     int procId;
     int workerId;
     public enum Status{
+        STARTING,
         RUNNING,
         SUSPEND,
+        TERMINATING,
+        TRASFERING,
+        FAILED,
         FINISHED,
         EXIT
     }
