@@ -122,8 +122,10 @@ public class WorkerNode {
 		try {
 			processClass = WorkerNode.class.getClassLoader().loadClass(
 					msg.getProcessName());
+		
 			Constructor constructor;
 			constructor = processClass.getConstructor(String[].class);
+			System.out.println(msg.getArgs().length);
 			Object[] passed = { msg.getArgs() };
 			MigratableProcess process = (MigratableProcess) constructor.newInstance(passed);
 			process.setProcessID(msg.getProcessId()); // method needed to be created in MigratableProcess
