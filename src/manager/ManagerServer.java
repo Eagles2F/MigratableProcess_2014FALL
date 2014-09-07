@@ -147,8 +147,12 @@ public class ManagerServer implements Runnable{
         manager.workerStatusMap.put(workerId, 0);
     }
     public int sendToWorker(Message cmd) throws IOException{
-        
-            
+            if(cmd.getCommandId() == CommandType.START){
+                System.out.println("arg length: "+cmd.getArgs().length);
+                for(int i=0;i<cmd.getArgs().length;i++){
+                    System.out.println("args:"+cmd.getArgs()[i]);
+                }
+            }
             objOutput.writeObject(cmd);
             objOutput.flush();
             return 0;

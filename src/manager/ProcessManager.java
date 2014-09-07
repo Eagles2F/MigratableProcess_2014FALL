@@ -72,6 +72,7 @@ public class ProcessManager {
             }            
             
             String[] inputLine = cmdLine.split(" ");
+           
             switch(inputLine[0]){
                 case "start":
                     handleStartProcess(inputLine);
@@ -145,6 +146,11 @@ public class ProcessManager {
         for(int i=3;i<cmdLine.length;i++){
             args[i-3] = cmdLine[i];
         }
+        System.out.println("args length "+args.length);
+        for(int i=0;i<args.length;i++){
+            System.out.println("args 1 "+args[i]);
+        }
+        
         try{
             Class process = ProcessManager.class.getClassLoader().loadClass(cmdLine[2]);
         }catch(ClassNotFoundException e){
@@ -158,6 +164,11 @@ public class ProcessManager {
         cmdMessage.setArgs(args);
         cmdMessage.setProcessName(cmdLine[2]);
         cmdMessage.setProcessId(processId);
+        
+        System.out.println("args length "+cmdMessage.getArgs().length);
+        for(int i=0;i<cmdMessage.getArgs().length;i++){
+            System.out.println("args 1 "+cmdMessage.getArgs()[i]);
+        }
         if(processServerMap.containsKey(workerId)){
             try{
                 processServerMap.get(workerId).sendToWorker(cmdMessage);
@@ -197,7 +208,7 @@ public class ProcessManager {
             return;
         }
         ProcessInfo procInfo = processesMap.get(procId);
-        if (procInfo.getStatus().equals(ProcessInfo.Status.RUNNING)) {
+        if (procInfo.getStatus().equals(ProcessInfo.Status.RUNNING.toString())) {
                 Message killCommand =new Message(Message.msgType.COMMAND);
                 killCommand.setCommandId(CommandType.KILL);
                 killCommand.setProcessId(procId);

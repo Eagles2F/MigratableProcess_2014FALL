@@ -14,6 +14,11 @@ public class ProcessInfo{
         FINISHED,
         EXIT
     }
+    public ProcessInfo(){
+        status = Status.STARTING.toString();
+        
+        
+    }
     public String getName(){
         return name;
     }
@@ -38,23 +43,8 @@ public class ProcessInfo{
     }
     
     public void setStatus(Status s){
-        String st = "NA";
-        switch(s){
-        case RUNNING:
-            st = "RUNNING";
-            break;
-        case SUSPEND:
-            st = "SUSPEND";
-            break;
-        case FINISHED:
-            st = "FINISHED";
-            break;
-        case EXIT:
-            st = "EXIT";
-            break;
-         default:
-             break;
+        status = s.toString();
             
-        }
+        
     }
 }

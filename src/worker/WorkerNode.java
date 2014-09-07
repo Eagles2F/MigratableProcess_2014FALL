@@ -120,7 +120,7 @@ public class WorkerNode {
 		//start the process
 		Class processClass;
 		try {
-			processClass = Process.class.getClassLoader().loadClass(
+			processClass = WorkerNode.class.getClassLoader().loadClass(
 					msg.getProcessName());
 			Constructor constructor;
 			constructor = processClass.getConstructor(String[].class);
