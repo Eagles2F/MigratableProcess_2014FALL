@@ -13,7 +13,7 @@ public class ManagerServer implements Runnable{
     private ProcessManager manager;
     private int workerId;
     private Socket socket;
-    private boolean running;
+    private volatile boolean running;
 
     private ObjectInputStream objInput;
     private ObjectOutputStream objOutput;

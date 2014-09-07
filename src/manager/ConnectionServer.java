@@ -5,9 +5,9 @@ import java.net.ServerSocket;
 
 public class ConnectionServer implements Runnable{
     private ProcessManager manager;
-    int portNum;
-    int workerCnt;
-    boolean running;
+    private int portNum;
+    private int workerCnt;
+    private volatile boolean running;
     ServerSocket serverSocket;
     public ConnectionServer(int port,ProcessManager procManager){
        portNum = port;
