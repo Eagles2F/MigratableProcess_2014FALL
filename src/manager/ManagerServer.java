@@ -64,6 +64,9 @@ public class ManagerServer implements Runnable{
                     case KILLRES:
                         handleKillRes(workerMessage);
                         break;
+                    case PULLINFORES:
+                        handlePullInfo(workerMessage);
+                        break;
                     default:
                         System.out.println("unrecagnized message");
                 }
@@ -122,6 +125,10 @@ public class ManagerServer implements Runnable{
             manager.processesMap.get(workerMsg.getProcessId()).setWorkerId(workerMsg.getTargetId());
             
         }
+    }
+    
+    private void handlePullInfo(Message workerMsg){
+        
     }
     public int sendToWorker(Message cmd) throws IOException{
         
