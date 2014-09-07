@@ -146,10 +146,7 @@ public class ProcessManager {
         for(int i=3;i<cmdLine.length;i++){
             args[i-3] = cmdLine[i];
         }
-        System.out.println("args length "+args.length);
-        for(int i=0;i<args.length;i++){
-            System.out.println("args 1 "+args[i]);
-        }
+        
         
         try{
             Class process = ProcessManager.class.getClassLoader().loadClass(cmdLine[2]);
@@ -165,10 +162,7 @@ public class ProcessManager {
         cmdMessage.setProcessName(cmdLine[2]);
         cmdMessage.setProcessId(processId);
         
-        System.out.println("args length "+cmdMessage.getArgs().length);
-        for(int i=0;i<cmdMessage.getArgs().length;i++){
-            System.out.println("args 1 "+cmdMessage.getArgs()[i]);
-        }
+        
         if(processServerMap.containsKey(workerId)){
             try{
                 processServerMap.get(workerId).sendToWorker(cmdMessage);
