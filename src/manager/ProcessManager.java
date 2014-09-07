@@ -360,7 +360,7 @@ public class ProcessManager {
                 checkWorkerLiveness();
             }
         };
-        timer.schedule(task, 0, 5*1000);
+        timer.schedule(task, 0, 10*1000);
         System.out.println("start the monitor timer");
         
     }
