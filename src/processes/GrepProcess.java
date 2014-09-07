@@ -16,7 +16,7 @@ public class GrepProcess extends MigratableProcess
 	private TransactionalFileInputStream  inFile;
 	private TransactionalFileOutputStream outFile;
 	private String query;
-
+	private boolean completed;
 	private volatile boolean suspending;
 
 	public GrepProcess(String args[]) throws Exception
@@ -29,14 +29,16 @@ public class GrepProcess extends MigratableProcess
 		query = args[0];
 		inFile = new TransactionalFileInputStream(args[1]);
 		outFile = new TransactionalFileOutputStream(args[2]);
+		this.completed =false;
 	}
 
 	public void run()
 	{
 		PrintStream out = new PrintStream(outFile);
 		DataInputStream in = new DataInputStream(inFile);
-
+		
 		try {
+		while(!completed){
 			while (!suspending) {
 				String line = in.readLine();
 
@@ -53,6 +55,7 @@ public class GrepProcess extends MigratableProcess
 					// ignore it
 				}
 			}
+		}
 		} catch (EOFException e) {
 			//End of File
 		} catch (IOException e) {
@@ -66,9 +69,11 @@ public class GrepProcess extends MigratableProcess
 	public void suspend()
 	{
 		suspending = true;
-		while (suspending);
 	}
 
+	public void resume(){
+		suspending = false;
+	}
     
 
 }
