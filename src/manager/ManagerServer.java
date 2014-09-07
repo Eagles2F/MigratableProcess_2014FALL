@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import utility.*;
 import utility.Message.msgType;
@@ -64,6 +68,9 @@ public class ManagerServer implements Runnable{
                     case KILLRES:
                         handleKillRes(workerMessage);
                         break;
+                    case PULLINFORES:
+                        handlePullInfo(workerMessage);
+                        break;
                     default:
                         System.out.println("unrecagnized message");
                 }
@@ -122,6 +129,22 @@ public class ManagerServer implements Runnable{
             manager.processesMap.get(workerMsg.getProcessId()).setWorkerId(workerMsg.getTargetId());
             
         }
+    }
+    
+    private void handlePullInfo(Message workerMsg){
+        Integer processId;
+        HashMap<Integer,ProcessInfo.Status> workerStatus = workerMsg.getWorkerInfo();
+        if(!workerStatus.isEmpty()){
+            Set<Integer> id = workerStatus.keySet();
+            Iterator<Integer> idIterator = id.iterator();
+            while(idIterator.hasNext()){
+                processId = idIterator.next();
+                manager.processesMap.get(processId).setStatus(workerStatus.get(processId));
+            }
+            
+        }
+        /*reset the guard state for this worker, it's alive*/
+        manager.workerStatusMap.put(workerId, 0);
     }
     public int sendToWorker(Message cmd) throws IOException{
         
