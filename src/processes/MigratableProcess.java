@@ -11,7 +11,7 @@ public abstract class MigratableProcess implements Runnable,Serializable {
    boolean complete;
 
 	public void setProcessID(int processId){
-	    
+	    this.processId = processId;
 	}
 
 	public Integer getProcessID(){
