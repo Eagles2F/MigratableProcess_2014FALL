@@ -181,6 +181,7 @@ public class WorkerNode {
 	// hanld the command exit
 	
 	private void handle_exit(Message msg){
+		System.out.println("shutdown!");
 		System.exit(0);
 	}
 	private void startpoll(){
