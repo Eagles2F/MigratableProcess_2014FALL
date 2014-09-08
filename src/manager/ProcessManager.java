@@ -117,7 +117,7 @@ public class ProcessManager {
         else{
             for(int i : processesMap.keySet()){
                 ProcessInfo info = processesMap.get(i);
-                System.out.println("Process ID: "+i+" Process Name: "+info.getName()+" Process Status: "+info.getStatus()+"Worker ID: "+info.getWorkerId());
+                System.out.println("Process ID: "+i+" Process Name: "+info.getName()+" Process Status: "+info.getStatus()+" Worker ID: "+info.getWorkerId());
             }
                 
         }
@@ -292,7 +292,7 @@ public class ProcessManager {
         System.out.println("Commands List:");
         System.out.println("ls : list all the worker node in the system");
         System.out.println("ps : list all the processes");
-        System.out.println("start <process name> <args[]> <worker id> : start the process on the designated worker");
+        System.out.println("start <worker id> <process name> <args[]> : start the process on the designated worker");
         System.out.println("migrate <process id> <source id> <target id> : migrate process from source to target worker");
         System.out.println("kill <process id> : kill the process");
     }
