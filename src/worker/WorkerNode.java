@@ -299,7 +299,8 @@ public class WorkerNode {
 					workerinfo.put(i, mp.getStatus());
 				}
 				response.setWorkerInfo(workerinfo);
-				
+				sendToManager(response);
+				System.out.println("report the processes states to the manager!");
 				try {
 					Thread.sleep(5 * Timer.ONE_SECOND);
 				} catch (InterruptedException e) {
