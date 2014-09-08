@@ -38,7 +38,7 @@ public class GrepProcess extends MigratableProcess
 		DataInputStream in = new DataInputStream(inFile);
 		
 		try {
-		while(!completed){
+		
 			while (!suspending) {
 				String line = in.readLine();
 
@@ -50,25 +50,28 @@ public class GrepProcess extends MigratableProcess
 				
 				// Make grep take longer so that we don't require extremely large files for interesting results
 				try {
-					Thread.sleep(100);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					// ignore it
 				}
 			}
-		}
+		//}
 		} catch (EOFException e) {
 			//End of File
+		    System.out.println("GrepProcess: end of file");
 		} catch (IOException e) {
 			System.out.println ("GrepProcess: Error: " + e);
 		}
 
-
+		System.out.println("set suspending false");
 		suspending = false;
 	}
 
 	public void suspend()
 	{
 		suspending = true;
+		while(suspending);
+            
 	}
 
 	public void resume(){

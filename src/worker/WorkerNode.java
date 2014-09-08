@@ -106,6 +106,7 @@ public class WorkerNode {
 		currentMap.remove(mp.getProcessID());
 		response.setTargetId(msg.getTargetId());
 		response.setProcessObject(mp);
+		response.setProcessId(msg.getProcessId());
 		response.setResult(Message.msgResult.SUCCESS);
 		
 		// send the response
