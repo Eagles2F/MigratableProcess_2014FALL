@@ -109,6 +109,7 @@ public class ManagerServer implements Runnable{
             
             workerMsg.setMessageType(Message.msgType.COMMAND);
             workerMsg.setCommandId(CommandType.MIGRATETARGET);
+            
             try{
                 manager.processServerMap.get(workerMsg.getTargetId()).sendToWorker(workerMsg);
             }catch(IOException e){
@@ -125,8 +126,15 @@ public class ManagerServer implements Runnable{
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate to "+workerMsg.getProcessId()+":"+workerMsg.getCause());
         }
         else{
+            int workerId = workerMsg.getTargetId();
+            int procId = workerMsg.getProcessId();
+            System.out.println("proc id:"+procId);
+            ProcessInfo procInfo = manager.processesMap.get(procId);
+            if(procInfo == null)
+                System.out.println("null procInfo");
             
-            manager.processesMap.get(workerMsg.getProcessId()).setWorkerId(workerMsg.getTargetId());
+            procInfo.setWorkerId(workerId);
+            procInfo.setWorkerId(workerMsg.getTargetId());
             
         }
     }
