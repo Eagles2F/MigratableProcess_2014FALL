@@ -64,6 +64,7 @@ public class WorkerNode {
 	
 	//command handling methods
 	private void handle_kill(Message msg) {
+		System.out.println("Start to kill the process!");
 		//response message prepared!
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.KILLRES);
@@ -75,10 +76,13 @@ public class WorkerNode {
 		
 		//send the response back
 		sendToManager(response);		
+		System.out.println("Killing process finished!");
 	}
 	
 	// receive the process from the process manager
 	private void handle_migratetarget(Message msg) {
+		System.out.println("Start to  migrate process to this machine!");
+		
 		//response prepared
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.MIGRATETARGETRES);
@@ -93,10 +97,12 @@ public class WorkerNode {
 		
 		//send the response back
 		sendToManager(response);
+		System.out.println("Process migration finished!");
 	}
 	
 	// handle the migrate from command. The worker received should package the process and diliver it to the master
 	private void handle_migratesource(Message msg) {
+		System.out.println("Start migrate process from this machine!");
 		// response prepared!
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.MIGARATESOURCERES);
@@ -111,9 +117,12 @@ public class WorkerNode {
 		
 		// send the response
 		sendToManager(response);
+		System.out.println("Migration finished!");
 	}
 	// using reflection to construct the process and find the class by the name of it
 	private void handle_start(Message msg) {
+		
+		System.out.println("Handle start process cmd!");
 		// response message prepared!
 		Message response=new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.STARTRES);
@@ -157,6 +166,7 @@ public class WorkerNode {
 		// send the response back to the master
 		response.setResult(Message.msgResult.SUCCESS);
 		sendToManager(response);
+		System.out.println("Process has been started!");
 	}
 	
 	 // handle the command assign id 
