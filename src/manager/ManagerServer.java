@@ -44,15 +44,16 @@ public class ManagerServer implements Runnable{
             sendToWorker(assignCmd);
             
             Message workerMessage;
-            
+            System.out.println("managerServer for worker "+workerId+"running");
             while(running){
-                System.out.println("managerServer for worker "+workerId+"running");
+                
                 try{
                     workerMessage = (Message) objInput.readObject();
                 }catch(ClassNotFoundException e){
                     continue;
                 }
-                System.out.println("worker message received: id "+workerMessage.getResponseId());
+                if(workerMessage.getResponseId() != ResponseType.PULLINFORES)
+                    System.out.println("worker message received: id "+workerMessage.getResponseId());
                 
                 switch(workerMessage.getResponseId()){
                     case STARTRES:
@@ -148,7 +149,19 @@ public class ManagerServer implements Runnable{
             Iterator<Integer> idIterator = id.iterator();
             while(idIterator.hasNext()){
                 processId = idIterator.next();
-                manager.processesMap.get(processId).setStatus(workerStatus.get(processId));
+                System.out.println("process id "+processId);
+                ProcessInfo procInfo = manager.processesMap.get(processId);
+                if(procInfo == null)
+                    System.out.println("procInfo null");
+                Status s = workerStatus.get(processId);
+                if(s == null)
+                    System.out.println("workerStatus null");
+                else
+                    System.out.println("s :"+s);
+                procInfo.setStatus(s);
+                
+                
+                //manager.processesMap.get(processId).setStatus(workerStatus.get(processId));
             }
             
         }
