@@ -90,8 +90,8 @@ public class WorkerNode {
 		//response prepared
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.MIGRATETARGETRES);
-		response.setProcessId(msg.getProcessId());;
-		response.setWorkerID(workerID);
+		response.setProcessId(msg.getProcessId());
+		response.setTargetId(workerID);
 		//continue the process here£¡
 		MigratableProcess mp = msg.getProcessObject();
 		System.out.println("object received, ready to go!");
