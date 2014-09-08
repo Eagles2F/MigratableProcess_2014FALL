@@ -63,8 +63,12 @@ public class GrepProcess extends MigratableProcess
 			System.out.println ("GrepProcess: Error: " + e);
 		}
 
-		System.out.println("set suspending false");
-		suspending = false;
+		if(suspending == true){
+    		System.out.println("set suspending false");
+    		suspending = false;
+		}else{
+		    complete = true;
+		}
 	}
 
 	public void suspend()
@@ -74,9 +78,7 @@ public class GrepProcess extends MigratableProcess
             
 	}
 
-	public void resume(){
-		suspending = false;
-	}
+	
     
 
 }
