@@ -47,6 +47,9 @@ public class WorkerNode {
 	private Thread t;
 	private HashMap<Integer, MigratableProcess> currentMap;
 	
+	//pollinfo 
+	Pollinfo pollinfo;
+	
 // methods
  	//constructing method
 	public WorkerNode(){
@@ -54,12 +57,14 @@ public class WorkerNode {
 		this.port = 0;
 		this.workerID = 0;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
+		this.pollinfo= new Pollinfo();
 	}
 	public WorkerNode(String host, int port){
 		this.host=host;
 		this.port = port;
 		this.workerID = 0;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
+		this.pollinfo = new Pollinfo();
 	}
 	
 	//command handling methods
@@ -179,6 +184,10 @@ public class WorkerNode {
 	private void handle_exit(Message msg){
 		System.exit(0);
 	}
+	private void startpoll(){
+		Thread t1 = new Thread(pollinfo);
+		t1.start();
+	}
 	
 	// some auxiliary methods
 	
@@ -208,6 +217,7 @@ public class WorkerNode {
 			int port = Integer.parseInt(args[1]);
 			WorkerNode worker = new WorkerNode(host, port);
 			
+			
 			try{
 				worker.socket = new Socket(host,port);
 			}catch(IOException e){
@@ -229,6 +239,10 @@ public class WorkerNode {
 				System.err.println("cannot create stream");
 				e.printStackTrace();
 			}
+
+			//pollinfo backend started
+			worker.startpoll();
+		
 			
 			//wait for the CMDs and deal with them
 			while(!worker.failure){
