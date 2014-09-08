@@ -74,7 +74,6 @@ public class WorkerNode {
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.KILLRES);
 		MigratableProcess mp = currentMap.get(msg.getProcessId());
-		mp.exit();
 		currentMap.remove(mp);
 		response.setProcessId(mp.getProcessID());
 		response.setResult(Message.msgResult.SUCCESS);
@@ -91,8 +90,8 @@ public class WorkerNode {
 		//response prepared
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.MIGRATETARGETRES);
-		response.setProcessId(msg.getProcessId());;
-		response.setWorkerID(workerID);
+		response.setProcessId(msg.getProcessId());
+		response.setTargetId(workerID);
 		//continue the process here£¡
 		MigratableProcess mp = msg.getProcessObject();
 		System.out.println("object received, ready to go!");
@@ -182,6 +181,7 @@ public class WorkerNode {
 	// hanld the command exit
 	
 	private void handle_exit(Message msg){
+		System.out.println("shutdown!");
 		System.exit(0);
 	}
 	private void startpoll(){
