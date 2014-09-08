@@ -27,6 +27,7 @@ public abstract class MigratableProcess implements Runnable,Serializable {
 	}
 	
 	public void setStatus(ProcessInfo.Status status){
+		this.procStatus = status;
 	    
 	}
 	public ProcessInfo.Status getStatus(){

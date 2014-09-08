@@ -196,6 +196,7 @@ public class WorkerNode {
 			System.out.println("start process");
 			t = new Thread(mp);
 			t.start();
+			mp.setStatus(ProcessInfo.Status.RUNNING);
 			currentMap.put(mp.getProcessID(), mp);
 		}
 		
