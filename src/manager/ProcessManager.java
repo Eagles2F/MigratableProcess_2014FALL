@@ -383,7 +383,7 @@ public class ProcessManager {
         ProcessManager manager = new ProcessManager(port);
         manager.startServer(port);
         System.out.println("go to start timer");
-        //manager.startMoniterTimer();
+        manager.startMoniterTimer();
         manager.startConsole();
         
         
