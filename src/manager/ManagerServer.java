@@ -149,15 +149,14 @@ public class ManagerServer implements Runnable{
             Iterator<Integer> idIterator = id.iterator();
             while(idIterator.hasNext()){
                 processId = idIterator.next();
-                System.out.println("process id "+processId);
+                //System.out.println("process id "+processId);
                 ProcessInfo procInfo = manager.processesMap.get(processId);
                 if(procInfo == null)
                     System.out.println("procInfo null");
                 Status s = workerStatus.get(processId);
                 if(s == null)
                     System.out.println("workerStatus null");
-                else
-                    System.out.println("s :"+s);
+                
                 procInfo.setStatus(s);
                 
                 
