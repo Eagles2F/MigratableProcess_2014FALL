@@ -74,7 +74,6 @@ public class WorkerNode {
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.KILLRES);
 		MigratableProcess mp = currentMap.get(msg.getProcessId());
-		mp.exit();
 		currentMap.remove(mp);
 		response.setProcessId(mp.getProcessID());
 		response.setResult(Message.msgResult.SUCCESS);
