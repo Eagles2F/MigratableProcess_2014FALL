@@ -117,7 +117,7 @@ public class ProcessManager {
         else{
             for(int i : processesMap.keySet()){
                 ProcessInfo info = processesMap.get(i);
-                System.out.println("Process ID: "+i+" Process Name: "+info.getName()+" Process Status: "+info.getStatus());
+                System.out.println("Process ID: "+i+" Process Name: "+info.getName()+" Process Status: "+info.getStatus()+"Worker ID: "+info.getWorkerId());
             }
                 
         }
@@ -262,6 +262,10 @@ public class ProcessManager {
         if(!processServerMap.containsKey(targetId)){
             System.out.println("the target worker "+targetId+" does not exist");
             return;
+        }
+        
+        if(processesMap.get(procId).getStatus() != Status.RUNNING.toString()){
+            System.out.println("the process "+procId+"is not running");
         }
         
         Message migrateCommand = new Message(Message.msgType.COMMAND);

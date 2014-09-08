@@ -135,6 +135,7 @@ public class ManagerServer implements Runnable{
             
             procInfo.setWorkerId(workerId);
             procInfo.setWorkerId(workerMsg.getTargetId());
+            procInfo.setStatus(Status.RUNNING);
             
         }
     }
