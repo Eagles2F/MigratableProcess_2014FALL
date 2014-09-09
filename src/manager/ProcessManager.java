@@ -106,8 +106,13 @@ public class ProcessManager {
         if(0 == workersMap.size())
             System.out.println("no worker in system");
         else{
-            for(int i : workersMap.keySet())
-                System.out.println("worker ID: "+i+"  IP Address: "+workersMap.get(i).getInetAddress());
+            for(int i : workersMap.keySet()){
+                //System.out.println("id "+i+"status "+workerStatusMap.get(i));
+                if(workerStatusMap.get(i) == -1)
+                    System.out.println("worker ID: "+i+"  IP Address: "+workersMap.get(i).getInetAddress()+" FAILED");
+                else
+                    System.out.println("worker ID: "+i+"  IP Address: "+workersMap.get(i).getInetAddress()+" ALIVE");
+            }
         }
     }
     
@@ -298,9 +303,19 @@ public class ProcessManager {
     }
     public void removeNode(int id){
         processServerMap.get(id).stop();
-        processServerMap.remove(id);
-        workersMap.remove(id);
-        workerStatusMap.remove(id);
+        //processServerMap.remove(id);
+        //workersMap.remove(id);
+        workerStatusMap.put(id, -1);
+        Set<Integer> procIdSet = processesMap.keySet();
+        Iterator<Integer> idIterator = procIdSet.iterator();
+        int procId;
+        while(idIterator.hasNext()){
+            procId = idIterator.next();
+            if(processesMap.get(procId).getWorkerId() == id){
+                processesMap.get(procId).setStatus(Status.FAILED);
+                
+            }
+        }
     }
     
     private void startServer(int port){
@@ -346,7 +361,9 @@ public class ProcessManager {
         Iterator<Integer> idIterator = workerIdSet.iterator();
         while(idIterator.hasNext()){
             int id = idIterator.next();
-            if(workerStatusMap.get(id).intValue() > 1){
+            if(workerStatusMap.get(id).intValue() == -1)
+                continue;
+            else if(workerStatusMap.get(id).intValue() > 1){
                 System.out.println("worker "+id+" is not alive. remove it");
                 removeNode(id);
             }
