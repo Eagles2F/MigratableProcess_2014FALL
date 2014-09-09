@@ -96,6 +96,8 @@ public class ProcessManager {
                     terminate();
                     System.exit(0);
                     break;
+                case "":
+                    break;
                 default:
                     System.out.println(inputLine[0]+"is not a valid command");
             }
@@ -272,7 +274,7 @@ public class ProcessManager {
         if(processesMap.get(procId).getStatus() != Status.RUNNING.toString()){
             System.out.println("the process "+procId+"is not running");
         }
-        
+        System.out.println("procId "+procId);
         Message migrateCommand = new Message(Message.msgType.COMMAND);
         migrateCommand.setCommandId(CommandType.MIGARATESOURCE);
         migrateCommand.setProcessId(procId);
