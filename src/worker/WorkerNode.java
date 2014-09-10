@@ -76,6 +76,9 @@ public class WorkerNode {
 		MigratableProcess mp = currentMap.get(msg.getProcessId());
 		currentMap.remove(msg.getProcessId());
 		mp.suspend();
+
+		currentMap.remove(mp);
+		
 		response.setProcessId(mp.getProcessID());
 		response.setResult(Message.msgResult.SUCCESS);
 		
@@ -145,6 +148,7 @@ public class WorkerNode {
 			Object[] passed = { msg.getArgs() };
 			MigratableProcess process = (MigratableProcess) constructor.newInstance(passed);
 			process.setProcessID(msg.getProcessId()); // method needed to be created in MigratableProcess
+			System.out.println("run process");
 			runProcess(process);
 		}catch (ClassNotFoundException e) {
 			response.setResult(Message.msgResult.FAILURE);
@@ -198,6 +202,7 @@ public class WorkerNode {
 			t = new Thread(mp);
 			t.start();
 			mp.setStatus(ProcessInfo.Status.RUNNING);
+			System.out.println("mg getProcessID "+mp.getProcessID());
 			currentMap.put(mp.getProcessID(), mp);
 		}
 		

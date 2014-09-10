@@ -95,10 +95,11 @@ public class ManagerServer implements Runnable{
     private void handleKillRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to kill: "+workerMsg.getCause());
+            manager.processesMap.get(workerMsg.getProcessId()).setStatus(ProcessInfo.Status.FAILED);
         }
         else{
             
-            manager.processesMap.get(workerMsg.getProcessId()).setStatus(ProcessInfo.Status.FINISHED);
+            manager.processesMap.get(workerMsg.getProcessId()).setStatus(ProcessInfo.Status.KILLED);
         }
     }
     
