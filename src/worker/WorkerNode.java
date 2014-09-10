@@ -27,6 +27,7 @@ import utility.ProcessInfo;
  *  @Author Jian Wang
  **/
 import utility.Message.msgType;
+import utility.ProcessInfo.Status;
 import utility.ResponseType;
 import processes.MigratableProcess;
 
@@ -114,18 +115,31 @@ public class WorkerNode {
 		// response prepared!
 		Message response = new Message(msgType.RESPONSE);
 		response.setResponseId(ResponseType.MIGARATESOURCERES);
+
 		// package the process to be transfered!
 		MigratableProcess mp = currentMap.get(msg.getProcessId());
-		mp.suspend();
-		currentMap.remove(mp.getProcessID());
-		response.setTargetId(msg.getTargetId());
-		response.setProcessObject(mp);
-		response.setProcessId(msg.getProcessId());
-		response.setResult(Message.msgResult.SUCCESS);
 		
-		// send the response
-		sendToManager(response);
-		System.out.println("Migration finished!");
+		//check the status of the process
+		if(mp.getStatus() != Status.RUNNING){//if the process is not in the RUNNING state,
+			response.setResult((Message.msgResult.FAILURE));
+			response.setCause("The process is not running!");
+			response.setProcessId(msg.getProcessId());
+			response.setStatus(mp.getStatus());
+			sendToManager(response);
+			System.out.println("Migration failed ! The process: "+msg.getProcessId()+" is not running!");
+		}
+		else{ // if it is running, do the migration
+			mp.suspend();
+			currentMap.remove(mp.getProcessID());
+			response.setTargetId(msg.getTargetId());
+			response.setProcessObject(mp);
+			response.setProcessId(msg.getProcessId());
+			response.setResult(Message.msgResult.SUCCESS);
+		
+			// send the response
+			sendToManager(response);
+			System.out.println("Migration finished!");
+		}
 	}
 	// using reflection to construct the process and find the class by the name of it
 	private void handle_start(Message msg) {
@@ -181,6 +195,12 @@ public class WorkerNode {
 	 // handle the command assign id 
 	private void handle_assignID(Message msg){
 		this.workerID =msg.getWorkerID(); 
+	}
+	
+	// handle the command clear
+	private void  handle_clear(Message msg){
+		this.currentMap.remove(msg.getProcessId());
+		System.out.println("Process:"+msg.getProcessId()+"is cleared!");
 	}
 	
 	// hanld the command exit
@@ -273,6 +293,9 @@ public class WorkerNode {
 							break;
 						case SHUTDOWN:// this command shutdown this worker
 							worker.handle_exit(master_cmd);
+							break;
+						case REMOVEPROC:
+							worker.handle_clear(master_cmd);
 							break;
 						default:
 							System.out.println("Wrong cmd:"+master_cmd.getCommandId());
