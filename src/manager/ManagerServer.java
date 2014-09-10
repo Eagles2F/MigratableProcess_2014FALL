@@ -106,6 +106,9 @@ public class ManagerServer implements Runnable{
     private void handleMigrateSourceRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate from "+workerMsg.getProcessId()+":"+workerMsg.getCause());
+            int procId = workerMsg.getProcessId();
+            ProcessInfo procInfo = manager.processesMap.get(procId);
+            procInfo.setStatus(workerMsg.getStatus());
         }
         else{
             
@@ -126,6 +129,9 @@ public class ManagerServer implements Runnable{
     private void hanleMigrateTargetRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate to "+workerMsg.getProcessId()+":"+workerMsg.getCause());
+            int procId = workerMsg.getProcessId();
+            ProcessInfo procInfo = manager.processesMap.get(procId);
+            procInfo.setStatus(Status.FAILED);
         }
         else{
             int workerId = workerMsg.getTargetId();

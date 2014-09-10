@@ -276,6 +276,7 @@ public class ProcessManager {
         
         if(processesMap.get(procId).getStatus() != Status.RUNNING.toString()){
             System.out.println("the process "+procId+"is not running");
+            return;
         }
         System.out.println("procId "+procId);
         Message migrateCommand = new Message(Message.msgType.COMMAND);

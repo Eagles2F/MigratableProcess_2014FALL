@@ -100,7 +100,7 @@ public class ReverseWordProcess extends MigratableProcess
     		System.out.println("set suspending false");
     		suspending = false;
 		}else{
-		    System.out.println("process RverseWordProcess finished");
+		    System.out.println("process RverseWordProcess complete");
 		    complete = true;
 		}
 	}
