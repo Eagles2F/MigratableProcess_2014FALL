@@ -96,6 +96,8 @@ public class ProcessManager {
                     terminate();
                     System.exit(0);
                     break;
+                case "":
+                    break;
                 default:
                     System.out.println(inputLine[0]+"is not a valid command");
             }
@@ -106,8 +108,13 @@ public class ProcessManager {
         if(0 == workersMap.size())
             System.out.println("no worker in system");
         else{
-            for(int i : workersMap.keySet())
-                System.out.println("worker ID: "+i+"  IP Address: "+workersMap.get(i).getInetAddress());
+            for(int i : workersMap.keySet()){
+                //System.out.println("id "+i+"status "+workerStatusMap.get(i));
+                if(workerStatusMap.get(i) == -1)
+                    System.out.println("worker ID: "+i+"  IP Address: "+workersMap.get(i).getInetAddress()+" FAILED");
+                else
+                    System.out.println("worker ID: "+i+"  IP Address: "+workersMap.get(i).getInetAddress()+" ALIVE");
+            }
         }
     }
     
@@ -117,7 +124,7 @@ public class ProcessManager {
         else{
             for(int i : processesMap.keySet()){
                 ProcessInfo info = processesMap.get(i);
-                System.out.println("Process ID: "+i+" Process Name: "+info.getName()+" Process Status: "+info.getStatus()+"Worker ID: "+info.getWorkerId());
+                System.out.println("Process ID: "+i+" Process Name: "+info.getName()+" Process Status: "+info.getStatus()+" Worker ID: "+info.getWorkerId());
             }
                 
         }
@@ -267,7 +274,7 @@ public class ProcessManager {
         if(processesMap.get(procId).getStatus() != Status.RUNNING.toString()){
             System.out.println("the process "+procId+"is not running");
         }
-        
+        System.out.println("procId "+procId);
         Message migrateCommand = new Message(Message.msgType.COMMAND);
         migrateCommand.setCommandId(CommandType.MIGARATESOURCE);
         migrateCommand.setProcessId(procId);
@@ -292,15 +299,25 @@ public class ProcessManager {
         System.out.println("Commands List:");
         System.out.println("ls : list all the worker node in the system");
         System.out.println("ps : list all the processes");
-        System.out.println("start <process name> <args[]> <worker id> : start the process on the designated worker");
+        System.out.println("start <worker id> <process name> <args[]> : start the process on the designated worker");
         System.out.println("migrate <process id> <source id> <target id> : migrate process from source to target worker");
         System.out.println("kill <process id> : kill the process");
     }
     public void removeNode(int id){
         processServerMap.get(id).stop();
-        processServerMap.remove(id);
-        workersMap.remove(id);
-        workerStatusMap.remove(id);
+        //processServerMap.remove(id);
+        //workersMap.remove(id);
+        workerStatusMap.put(id, -1);
+        Set<Integer> procIdSet = processesMap.keySet();
+        Iterator<Integer> idIterator = procIdSet.iterator();
+        int procId;
+        while(idIterator.hasNext()){
+            procId = idIterator.next();
+            if(processesMap.get(procId).getWorkerId() == id){
+                processesMap.get(procId).setStatus(Status.FAILED);
+                
+            }
+        }
     }
     
     private void startServer(int port){
@@ -346,7 +363,9 @@ public class ProcessManager {
         Iterator<Integer> idIterator = workerIdSet.iterator();
         while(idIterator.hasNext()){
             int id = idIterator.next();
-            if(workerStatusMap.get(id).intValue() > 1){
+            if(workerStatusMap.get(id).intValue() == -1)
+                continue;
+            else if(workerStatusMap.get(id).intValue() > 1){
                 System.out.println("worker "+id+" is not alive. remove it");
                 removeNode(id);
             }
