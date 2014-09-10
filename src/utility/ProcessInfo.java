@@ -12,7 +12,7 @@ public class ProcessInfo{
         TRASFERING,
         FAILED,
         FINISHED,
-        EXIT
+        KILLED
     }
     public ProcessInfo(){
         status = Status.STARTING.toString();
