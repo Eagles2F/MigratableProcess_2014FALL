@@ -96,6 +96,9 @@ public class ProcessManager {
                     terminate();
                     System.exit(0);
                     break;
+                case "clear":
+                    handleProcessClear();
+                    break;
                 case "":
                     break;
                 default:
@@ -295,6 +298,26 @@ public class ProcessManager {
 
     }
     
+    /*clear the process which are finished or failed*/
+    private void handleProcessClear(){
+        for(int i:processesMap.keySet()){
+            if((processesMap.get(i).getStatus() == Status.FINISHED.toString()) ||
+                    (processesMap.get(i).getStatus() == Status.FAILED.toString())){
+                Message msg = new Message(Message.msgType.COMMAND);
+                msg.setCommandId(CommandType.REMOVEPROC);
+                msg.setProcessId(i);
+                int workerId = processesMap.get(i).getWorkerId();
+                try{
+                    
+                processServerMap.get(workerId).sendToWorker(msg);
+                }catch(IOException e){
+                    System.out.println("remove Command sent failed, remove worker "+workerId);
+                    removeNode(workerId);
+                }
+                processesMap.remove(i);
+            }
+        }
+    }
     private void handleHelp(String[] cmdLine){
         System.out.println("Commands List:");
         System.out.println("ls : list all the worker node in the system");
@@ -302,6 +325,7 @@ public class ProcessManager {
         System.out.println("start <worker id> <process name> <args[]> : start the process on the designated worker");
         System.out.println("migrate <process id> <source id> <target id> : migrate process from source to target worker");
         System.out.println("kill <process id> : kill the process");
+        System.out.println("clear :clear all the process which are not running");
     }
     public void removeNode(int id){
         processServerMap.get(id).stop();
