@@ -12,6 +12,7 @@ public enum CommandType {
     MIGRATETARGET, /*manager to target worker*/
     KILL,
     SHUTDOWN, 
-    ASSIGNID
+    ASSIGNID,
+    REMOVEPROC
 }
 
