@@ -26,7 +26,12 @@ import utility.ProcessInfo.Status;
 /**
 * ProcessManager serve as the master of this whole system. It will open a command
 * line console for user input and start the connectionServer for listening to the 
-* socket connect from worker node.abstract
+* socket connect from worker node. It also start a monitor thread, which will wake up
+* every 10 seconds to check the worker's status. whether the worker report it's status.
+* if worker's status does not update for consecutive two check, master will set it's status
+* to Failed.
+* @Author Yifan Li
+*  @Author Jian Wang
 */
 
 public class ProcessManager {
@@ -108,7 +113,7 @@ public class ProcessManager {
             }
         }
     }
-    
+    /*list all the workers and their status*/
     private void handleLs(String[] cmdLine){
         if(0 == workersMap.size())
             System.out.println("no worker in system");
@@ -123,6 +128,7 @@ public class ProcessManager {
         }
     }
     
+    /*list all the processes and their status*/
     private void handlePs(String[] cmdLine){
         if(0 == processesMap.size())
             System.out.println("no process information");
@@ -135,6 +141,8 @@ public class ProcessManager {
         }
     }
     
+    /*start a process on the specified work, set the process status to starting and will alter the status according to
+     * the start response from the worker*/
     private void handleStartProcess(String[] cmdLine){
         if(cmdLine.length < 3){
             System.out.println("invalid argument, see help for more information");
@@ -196,6 +204,7 @@ public class ProcessManager {
             
     }
     
+    /*kill the process. will send the kill command to the worker on whick the process is running*/
     private void handleKillProcess(String[] cmdLine){
         int procId=-1;
         if(cmdLine.length < 2){
@@ -236,6 +245,13 @@ public class ProcessManager {
             }
     } 
     
+    /*migrate a process from source worker to target worker.
+     * this procedure will need to steps:
+     * 1. send migrate command to source worker, then wait for the response
+     * 2. after receiving the response from the source worker, send the migrate command and the
+     *    migratable process object to the target worker
+     * this function will send the migrate command to source and set the process status to TRANSFERING
+     * and the ManagerServe will wait and process the response*/
     private void handleMigrateProcess(String[] cmdLine){
         if(cmdLine.length != 4){
             System.out.println("wrong arguments number");
@@ -302,7 +318,9 @@ public class ProcessManager {
 
     }
     
-    /*clear the process which are finished or failed*/
+    /*clear the process which are finished or failed.
+     * this function will send a command to worker to let it remove the process first
+     * and then remove it locally*/
     private void handleProcessClear(){
         for(int i:processesMap.keySet()){
             if((processesMap.get(i).getStatus() == Status.FINISHED.toString()) ||
@@ -331,6 +349,9 @@ public class ProcessManager {
         System.out.println("kill <process id> : kill the process");
         System.out.println("clear :clear all the process which are not running");
     }
+    
+    /*stop the server for the worker and set it's status as -1.
+     * set all the process whick are not FINISHED to FAILED*/
     public void removeNode(int id){
         processServerMap.get(id).stop();
         //processServerMap.remove(id);
@@ -342,7 +363,8 @@ public class ProcessManager {
         while(idIterator.hasNext()){
             procId = idIterator.next();
             if(processesMap.get(procId).getWorkerId() == id){
-                processesMap.get(procId).setStatus(Status.FAILED);
+                if(processesMap.get(procId).getStatus() != Status.FINISHED.toString())
+                    processesMap.get(procId).setStatus(Status.FAILED);
                 
             }
         }
@@ -354,6 +376,9 @@ public class ProcessManager {
         t1.start();
     }
     
+    /*terminate the whole system.
+     * it will send terminate command to every worker to let them to shutdown
+     * and then exit stop the server for every worker*/
     private void terminate(){
         int workerId;
         Message tmntCommand = new Message(Message.msgType.COMMAND);
@@ -384,6 +409,12 @@ public class ProcessManager {
         
     }
     
+    /*this function is called by the monitor thread every 10 seconds.
+     * it check the status of every worker and increment 
+     * the status 1 every time. The ManagerServer will set the status
+     * to 0 every time it receive the status report from worker.
+     * so when the status number is bigger than 1, it means worker has not
+     * update for at least 10 seconds and consider the worker is Failed*/
     private void checkWorkerLiveness(){
         //System.out.println("monitor timer expire!");
         
@@ -404,6 +435,7 @@ public class ProcessManager {
         }
     }
     
+    /*start a moniter timer which is set to 10 seconds*/
     public void startMoniterTimer(){
         Timer timer = new Timer(true);
         TimerTask task = new TimerTask(){

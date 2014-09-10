@@ -13,6 +13,13 @@ import utility.Message.msgType;
 import utility.ProcessInfo.Status;
 import manager.ProcessManager;
 import utility.*;
+
+/*the communication server with worker.
+ * when a worker add in, a server thread will be created for it
+ * it will handle all the response from the worker and the status update from worker
+ * @Author Yifan Li
+ * @Author Jian Wang
+ * */
 public class ManagerServer implements Runnable{
     private ProcessManager manager;
     private int workerId;
@@ -83,15 +90,20 @@ public class ManagerServer implements Runnable{
         }
     }
     
+    /*when receive the start response from worker, if succeed,
+     * the process status is set to RUNNING,otherwise, set to FAILED*/
     private void handleStartRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessName()+"failed to start: "+workerMsg.getCause());
+            manager.processesMap.get(workerMsg.getProcessId()).setStatus(ProcessInfo.Status.FAILED);
         }
         else{
             manager.processesMap.get(workerMsg.getProcessId()).setStatus(Status.RUNNING);
         }
     }
     
+    /*when receive the kill response, if succeed,
+     * the process state is set to KILLED, otherwise, set to FAILED*/
     private void handleKillRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to kill: "+workerMsg.getCause());
@@ -103,6 +115,8 @@ public class ManagerServer implements Runnable{
         }
     }
     
+    /*when receive the Migrate response from Source worker, it will send the
+     *  Migratable process object to the target worker*/
     private void handleMigrateSourceRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate from "+workerMsg.getProcessId()+":"+workerMsg.getCause());
@@ -126,6 +140,8 @@ public class ManagerServer implements Runnable{
         }
     }
     
+    /*when receive the migrate response from the target worker and succeed, it will set the 
+     * process status to RUNNING. otherwise will set to FAILED*/
     private void hanleMigrateTargetRes(Message workerMsg){
         if(workerMsg.getResult() == Message.msgResult.FAILURE){
             System.out.println("process "+workerMsg.getProcessId()+"failed to migrate to "+workerMsg.getProcessId()+":"+workerMsg.getCause());
@@ -148,6 +164,9 @@ public class ManagerServer implements Runnable{
         }
     }
     
+    /*when receive the worker information report from worker, it will
+     * update the status value in hashmap and will update the process status
+     * in the processesMap*/
     private void handleWorkerInfoReport(Message workerMsg){
         Integer processId;
         HashMap<Integer,ProcessInfo.Status> workerStatus = workerMsg.getWorkerInfo();

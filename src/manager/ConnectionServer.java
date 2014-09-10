@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 
+/*this is the connection server which is created by master to listen to the connection request from worker and 
+ * create a ManagerServer for the worker
+ * @Author Yifan Li
+ * @Author Jian Wang*/
 public class ConnectionServer implements Runnable{
     private ProcessManager manager;
     private int portNum;

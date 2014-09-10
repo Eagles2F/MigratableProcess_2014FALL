@@ -7,7 +7,9 @@ import java.io.RandomAccessFile;
 
 import java.io.File;
 /*the TransctionalFileInputStream class will remember the state of the file and use
- * RandmAcessFile to seek to the offset and continue the reading. It's useful when migrate the process*/
+ * RandmAcessFile to seek to the offset and continue the reading. It's useful when migrate the process
+ * @Author Yifan Li
+ * @Author Jian Wang*/
 public class TransactionalFileOutputStream extends OutputStream implements
 Serializable{
     private File outputFile;
