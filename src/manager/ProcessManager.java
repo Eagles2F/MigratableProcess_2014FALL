@@ -33,8 +33,10 @@ public class ProcessManager {
     public ConcurrentHashMap<Integer,ProcessInfo> processesMap;
     public ConcurrentHashMap<Integer,Socket> workersMap;/*worker node socket for every id*/
     public ConcurrentHashMap<Integer,ManagerServer> processServerMap;/*processServer for every worker node Id*/
-    public ConcurrentHashMap<Integer,Integer> workerStatusMap;/*worker will report the status every 5 seconds, a timer task will
-                                                             check this*/
+    public ConcurrentHashMap<Integer,Integer> workerStatusMap;/*worker will report the status every 5 seconds, when receive the status
+                                                                report this value will be set to 0. a timer task will check this value every 10 seconds
+                                                                and increment 1 every time. when this value is bigger then 1, that means the worker does not
+                                                                update it's status, we will set this value to -1 and means this worker is failed*/
     private ConnectionServer connServer;
 
     private int port;
@@ -264,13 +266,14 @@ public class ProcessManager {
             return;
         }
         
-        if(!processServerMap.containsKey(sourceId)){
-            System.out.println("the source worker "+sourceId+" does not exist");
+        //if source worker does not exist or it's not alive(workerStatus is -1)
+        if(!processServerMap.containsKey(sourceId) || (workerStatusMap.get(sourceId) == -1)){
+            System.out.println("the source worker "+sourceId+" does not exist or not alive");
             return;
         }
      
-        if(!processServerMap.containsKey(targetId)){
-            System.out.println("the target worker "+targetId+" does not exist");
+        if(!processServerMap.containsKey(targetId) || (workerStatusMap.get(targetId) == -1)){
+            System.out.println("the target worker "+targetId+" does not exist or not alive");
             return;
         }
         

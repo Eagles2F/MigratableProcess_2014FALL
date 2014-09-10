@@ -48,8 +48,8 @@ public class WorkerNode {
 	private Thread t;
 	private HashMap<Integer, MigratableProcess> currentMap;
 	
-	//pollinfo 
-	Pollinfo pollinfo;
+	//worker information report 
+	WorkerInfoReport workerinfo;
 	
 // methods
  	//constructing method
@@ -58,14 +58,14 @@ public class WorkerNode {
 		this.port = 0;
 		this.workerID = 0;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
-		this.pollinfo= new Pollinfo();
+		this.workerinfo= new WorkerInfoReport();
 	}
 	public WorkerNode(String host, int port){
 		this.host=host;
 		this.port = port;
 		this.workerID = 0;
 		this.currentMap = new HashMap<Integer, MigratableProcess>();
-		this.pollinfo = new Pollinfo();
+		this.workerinfo = new WorkerInfoReport();
 	}
 	
 	//command handling methods
@@ -97,7 +97,7 @@ public class WorkerNode {
 		response.setResponseId(ResponseType.MIGRATETARGETRES);
 		response.setProcessId(msg.getProcessId());
 		response.setTargetId(workerID);
-		//continue the process here£¡
+		//continue the process here
 		MigratableProcess mp = msg.getProcessObject();
 		System.out.println("object received, ready to go!");
 		runProcess(mp);
@@ -209,8 +209,8 @@ public class WorkerNode {
 		System.out.println("shutdown!");
 		System.exit(0);
 	}
-	private void startpoll(){
-		Thread t1 = new Thread(pollinfo);
+	private void startreport(){
+		Thread t1 = new Thread(workerinfo);
 		t1.start();
 	}
 	
@@ -267,8 +267,8 @@ public class WorkerNode {
 				e.printStackTrace();
 			}
 
-			//pollinfo backend started
-			worker.startpoll();
+			//worker info backend started
+			worker.startreport();
 		
 			
 			//wait for the CMDs and deal with them
@@ -323,8 +323,8 @@ public class WorkerNode {
 		}
 	}
 	
-	// poll info method 
-	public class Pollinfo implements Runnable{
+	// worker info method 
+	public class WorkerInfoReport implements Runnable{
 
 		@Override
 		public void run() {

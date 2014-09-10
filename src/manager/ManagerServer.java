@@ -70,7 +70,7 @@ public class ManagerServer implements Runnable{
                         handleKillRes(workerMessage);
                         break;
                     case PULLINFORES:
-                        handlePullInfo(workerMessage);
+                        handleWorkerInfoReport(workerMessage);
                         break;
                     default:
                         System.out.println("unrecagnized message");
@@ -148,7 +148,7 @@ public class ManagerServer implements Runnable{
         }
     }
     
-    private void handlePullInfo(Message workerMsg){
+    private void handleWorkerInfoReport(Message workerMsg){
         Integer processId;
         HashMap<Integer,ProcessInfo.Status> workerStatus = workerMsg.getWorkerInfo();
         if(!workerStatus.isEmpty()){
