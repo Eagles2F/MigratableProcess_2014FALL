@@ -14,7 +14,9 @@ import utility.ProcessInfo.Status;
  * save to the output file and it will remove the extra space. 
  * for example:
  * input file: this is distributed system
- * output file: system distributed is this*/
+ * output file: system distributed is this
+ * @Author Yifan Li
+ * @Author Jian Wang*/
 
 public class ReverseWordProcess extends MigratableProcess
 {
@@ -101,7 +103,16 @@ public class ReverseWordProcess extends MigratableProcess
     		suspending = false;
 		}else{
 		    System.out.println("process RverseWordProcess complete");
-		    complete = true;
+		    
+		    try{
+	            complete = true;
+	            inFile.close();
+	            in.close();
+	            out.flush();
+	            outFile.close();
+	            }catch(IOException e){
+	                
+	            }
 		}
 	}
 
