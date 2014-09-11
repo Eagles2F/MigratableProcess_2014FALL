@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import processes.MigratableProcess;
 /**
-* command class used to send between manager and worker
+* Message class used to send between manager and worker
+* @Author Yifan Li
+* @Author Jian Wang
 */
 public class Message implements Serializable {
     public enum msgType {

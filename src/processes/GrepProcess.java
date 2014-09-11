@@ -67,7 +67,16 @@ public class GrepProcess extends MigratableProcess
     		System.out.println("set suspending false");
     		suspending = false;
 		}else{
+		    try{
 		    complete = true;
+		    inFile.close();
+		    in.close();
+		    out.flush();
+		    outFile.close();
+		    }catch(IOException e){
+		        
+		    }
+		    
 		    System.out.println("GrepProcess complete");
 		}
 	}
