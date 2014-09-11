@@ -165,7 +165,7 @@ public class ManagerServer implements Runnable{
     }
     
     /*when receive the worker information report from worker, it will
-     * update the status value in hashmap and will update the process status
+     * update the worker status value in workerStatusMap and will update the process status
      * in the processesMap*/
     private void handleWorkerInfoReport(Message workerMsg){
         Integer processId;

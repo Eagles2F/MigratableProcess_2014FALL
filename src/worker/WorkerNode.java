@@ -165,6 +165,7 @@ public class WorkerNode {
 			System.out.println("run process");
 			runProcess(process);
 		}catch (ClassNotFoundException e) {
+		    failure = true;
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Class not Found!");
 		}catch (NoSuchMethodException e) {

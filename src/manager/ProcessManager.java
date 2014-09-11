@@ -27,7 +27,7 @@ import utility.ProcessInfo.Status;
 * ProcessManager serve as the master of this whole system. It will open a command
 * line console for user input and start the connectionServer for listening to the 
 * socket connect from worker node. It also start a monitor thread, which will wake up
-* every 10 seconds to check the worker's status. whether the worker report it's status.
+* every 5 seconds to check the worker's status. whether the worker report it's status.
 * if worker's status does not update for consecutive two check, master will set it's status
 * to Failed.
 * @Author Yifan Li
@@ -39,7 +39,7 @@ public class ProcessManager {
     public ConcurrentHashMap<Integer,Socket> workersMap;/*worker node socket for every id*/
     public ConcurrentHashMap<Integer,ManagerServer> processServerMap;/*processServer for every worker node Id*/
     public ConcurrentHashMap<Integer,Integer> workerStatusMap;/*worker will report the status every 5 seconds, when receive the status
-                                                                report this value will be set to 0. a timer task will check this value every 10 seconds
+                                                                report this value will be set to 0. a timer task will check this value every 5 seconds
                                                                 and increment 1 every time. when this value is bigger then 1, that means the worker does not
                                                                 update it's status, we will set this value to -1 and means this worker is failed*/
     private ConnectionServer connServer;
@@ -168,12 +168,12 @@ public class ProcessManager {
         }
         
         
-        try{
+        /*try{
             Class process = ProcessManager.class.getClassLoader().loadClass(cmdLine[2]);
         }catch(ClassNotFoundException e){
             System.out.println("no such process class "+cmdLine[2]);
             return;
-        }
+        }*/
         
         processId++;
         Message cmdMessage = new Message(Message.msgType.COMMAND);
@@ -409,12 +409,12 @@ public class ProcessManager {
         
     }
     
-    /*this function is called by the monitor thread every 10 seconds.
+    /*this function is called by the monitor thread every 5 seconds.
      * it check the status of every worker and increment 
      * the status 1 every time. The ManagerServer will set the status
      * to 0 every time it receive the status report from worker.
      * so when the status number is bigger than 1, it means worker has not
-     * update for at least 10 seconds and consider the worker is Failed*/
+     * update for at least 5 seconds and consider the worker is Failed*/
     private void checkWorkerLiveness(){
         //System.out.println("monitor timer expire!");
         
@@ -435,7 +435,7 @@ public class ProcessManager {
         }
     }
     
-    /*start a moniter timer which is set to 10 seconds*/
+    /*start a moniter timer which is set to 5 seconds*/
     public void startMoniterTimer(){
         Timer timer = new Timer(true);
         TimerTask task = new TimerTask(){
@@ -443,7 +443,7 @@ public class ProcessManager {
                 checkWorkerLiveness();
             }
         };
-        timer.schedule(task, 0, 10*1000);
+        timer.schedule(task, 0, 5*1000);
         System.out.println("start the monitor timer");
         
     }
