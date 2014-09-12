@@ -193,7 +193,7 @@ public class ProcessManager {
                 procInfo.setStatus(Status.STARTING);
                 processesMap.put(processId, procInfo);
             }catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.out.println("start Command sent failed, remove worker "+workerId);
                 removeNode(workerId);
             }
@@ -232,7 +232,7 @@ public class ProcessManager {
                     processServerMap.get(workerId).sendToWorker(killCommand);
                     processesMap.get(procId).setStatus(Status.TERMINATING);
                 }catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     System.out.println("Kill Command sent failed, remove worker "+workerId);
                     removeNode(workerId);
                 }
@@ -308,7 +308,7 @@ public class ProcessManager {
             processServerMap.get(sourceId).sendToWorker(migrateCommand);
             processesMap.get(procId).setStatus(Status.TRASFERING);
         }catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             System.out.println("Migrate Command sent failed, remove worker "+sourceId);
             removeNode(sourceId);
         }
@@ -393,7 +393,7 @@ public class ProcessManager {
                 processServerMap.get(workerId).stop();
             }catch (IOException e) {
                 processServerMap.get(workerId).stop();
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.out.println("shutdown Command sent failed, remove worker "+workerId);
                 removeNode(workerId);
             }

@@ -232,6 +232,7 @@ public class WorkerNode {
 			try {
 				obos.writeObject(sc);
 			} catch (IOException e) {
+			    failure = true;
 				System.err.println("fail to send manager");
 			}
 		}
