@@ -84,6 +84,24 @@ public class GrepProcess extends MigratableProcess
 	public void suspend()
 	{
 		suspending = true;
+		
+		//prepare the file transferring
+		inFile.setMigrateState(true);
+		outFile.setMigrateState(true);
+		
+		//close the transactional IO 
+		try {
+			inFile.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			outFile.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		while(suspending);
             
 	}
