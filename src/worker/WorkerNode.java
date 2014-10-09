@@ -165,27 +165,40 @@ public class WorkerNode {
 			System.out.println("run process");
 			runProcess(process);
 		}catch (ClassNotFoundException e) {
-		    failure = true;
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Class not Found!");
+			sendToManager(response);
+			return;
 		}catch (NoSuchMethodException e) {
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("No such method!");
+			sendToManager(response);
+			return;
 		} catch (SecurityException e) {
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Security Exception!");
+			sendToManager(response);
+			return;
 		} catch (InstantiationException e) {
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Instantiation Exception!");
+			sendToManager(response);
+			return;
 		} catch (IllegalAccessException e) {
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Illegal Access !");
+			sendToManager(response);
+			return;
 		} catch (IllegalArgumentException e) {
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Illegal Argument!");
+			sendToManager(response);
+			return;
 		} catch (InvocationTargetException e) {
 			response.setResult(Message.msgResult.FAILURE);
 			response.setCause("Invocation Target Exception!");
+			sendToManager(response);
+			return;
 		}
 		// send the response back to the master
 		response.setResult(Message.msgResult.SUCCESS);
@@ -346,11 +359,11 @@ public class WorkerNode {
 				}
 				response.setWorkerInfo(workerinfo);
 				sendToManager(response);
-				//System.out.println("report the processes states to the manager!");
+				
 				try {
 					Thread.sleep(5 * Timer.ONE_SECOND);
 				} catch (InterruptedException e) {
-					//System.out.println(e.toString());
+				
 				}
 			}
 		}
